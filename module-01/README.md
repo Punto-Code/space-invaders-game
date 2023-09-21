@@ -131,14 +131,6 @@ You're retrieving the values that were set using the `this` keyword inside the c
 
 ---
 
-Certainly! Let's create a step-by-step guide for setting up the project during Week 1's codealong.
-
----
-
-Absolutely, I'll provide a more detailed step-by-step guide that includes setting up the game's basic visuals in the HTML and CSS, as well as the player element within the `Player` class constructor.
-
----
-
 ## Codealong (40-45 minutes):
 
 ### 1. Setting up our Project:
@@ -225,9 +217,9 @@ body {
 class Player {
   constructor() {
     this.element = document.getElementById("player");
+    this.speed = 5;
     this.x = 0;
     this.y = 0;
-    this.speed = 5;
     this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
   }
 }
@@ -266,9 +258,9 @@ class Player {
   // ...
 
   positionElement(x,y) {
-    this.x = x;
+    this.x = x; 
     this.y = y;
-    this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+    this.element.style.transform = `translate(${x}px, ${y}px)`;
   }
 }
 ```
@@ -286,16 +278,16 @@ Notice that the player's ship is now at the bottom center of the game area. If w
 class Player {
   constructor({ x, y }) {
     this.element = document.getElementById("player");
-    this.x = x || 0;
-    this.y = y || 0;
     this.speed = 5;
-    this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+    this.x = x;
+    this.y = y;
+    this.positionElement(this.x, this.y)
   }
 
   positionElement(x, y) {
-    this.x = x;
+    this.x = x; 
     this.y = y;
-    this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+    this.element.style.transform = `translate(${x}px, ${y}px)`;
   }
 }
 
@@ -304,6 +296,6 @@ const player = new Player({ x: 300, y: 590 });
 console.log(`x: ${player.x} y: ${player.y}`); // logs x: 300 y: 590
 ```
 
-By the end of this codealong, you will have set up the game's visuals, linked necessary assets, and started to tie together the visual elements with the underlying code structure through the `Player` class. This ensures a holistic understanding of how code and design interface in game development.
+By the end of this codealong, you will have set up the game's visuals, linked necessary assets, and started to tie together the visual elements with the underlying code structure through the `Player` class. In the next lesson, we'll explore the game loop and introduce player movement.
 
 
