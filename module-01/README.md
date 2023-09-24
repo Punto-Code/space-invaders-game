@@ -217,7 +217,7 @@ body {
 class Player {
   constructor() {
     this.element = document.getElementById("player");
-    this.speed = 5;
+    this.speed = 150;
     this.x = 0;
     this.y = 0;
     this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
@@ -257,18 +257,18 @@ We want to be able to interact with our player instance and actually see the pla
 class Player {
   // ...
 
-  positionElement(x,y) {
-    this.x = x; 
-    this.y = y;
-    this.element.style.transform = `translate(${x}px, ${y}px)`;
+  draw() {
+    this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
   }
 }
 ```
 
-Now, we can try this method in the console to move the player on the screen. 
+Now, we can try this method in the console to move the player on the screen.
 
 ```js
-player.positionElement(300, 590);
+player.x = 300;
+player.y = 590;
+player.draw();
 ```
 
 Notice that the player's ship is now at the bottom center of the game area. If we want to be able to set the starting position of the player upon initialization, we can add some arguments to the constructor:
@@ -278,16 +278,14 @@ Notice that the player's ship is now at the bottom center of the game area. If w
 class Player {
   constructor({ x, y }) {
     this.element = document.getElementById("player");
-    this.speed = 5;
+    this.speed = 150;
     this.x = x;
     this.y = y;
-    this.positionElement(this.x, this.y)
+    this.draw();
   }
 
-  positionElement(x, y) {
-    this.x = x; 
-    this.y = y;
-    this.element.style.transform = `translate(${x}px, ${y}px)`;
+  draw() {
+    this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
   }
 }
 
@@ -296,6 +294,13 @@ const player = new Player({ x: 300, y: 590 });
 console.log(`x: ${player.x} y: ${player.y}`); // logs x: 300 y: 590
 ```
 
+We can move the ship around by updating the coordinates and calling the `draw()` method like so:
+
+```js
+player.x = 20;
+player.draw();
+```
+
+If we run this in our browser console, we can see that the ship moves to 20 pixels from the edge of the game area.
+
 By the end of this codealong, you will have set up the game's visuals, linked necessary assets, and started to tie together the visual elements with the underlying code structure through the `Player` class. In the next lesson, we'll explore the game loop and introduce player movement.
-
-

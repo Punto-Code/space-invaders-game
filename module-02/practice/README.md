@@ -1,7 +1,3 @@
-Great, let's build upon the README for Lesson 1 to create the README for Lesson 2. The focus of Lesson 2 will be on further solidifying the foundational knowledge while introducing new, slightly more advanced topics like game loops and event listeners.
-
----
-
 # Week 2: 1-on-1 TA Session Ideas
 
 ## Overview
