@@ -165,7 +165,6 @@ move(direction, deltaTime) {
 3. Create a `gameContainer` constant and set it to the div found in `index.html`
 4. Create new instances of `Game` and `Player`, and initialize them.
 
-
 ```html
     <!-- ... -->
     <script src="scripts/game.js"></script>
@@ -177,11 +176,11 @@ move(direction, deltaTime) {
 
 ```js
 // scripts/main.js
-const gameContainer = document.getElementById("game")
+const gameContainer = document.getElementById("game");
 const player = new Player({ x: 300, y: 590 });
 const game = new Game({
-  container: gameContainer, 
-  player: player
+  container: gameContainer,
+  player: player,
 });
 game.start();
 ```
@@ -198,15 +197,14 @@ game.start();
 - **Action**: Hold down the left or right arrow keys.
 - **Expected**: The player should move smoothly in the direction you're holding.
 
-
-
 ### Part 4: Adding Boundary Constraints
+
 Adding boundary constraints is a crucial aspect of game development. To prevent the ship from moving off the right edge of the game area, we can modify the `move` method in the `Player` class to account for the game area width.
 
 #### Step 4.1: Update the `move` Method in `Player` Class
 
 1. Open `Player.js`.
-2. Modify the `move` method to add a condition that prevents the ship from moving beyond the right edge of the game area. For this example, let's assume the game area width is 664 pixels. This will be refined in later lessons.
+2. Modify the `move` method to add a condition that prevents the ship from moving beyond the right edge of the game area. For this example, let's assume the game area width is 644 pixels. This will be refined in later lessons.
 
 ```js
 move(direction, deltaTime) {
@@ -215,7 +213,7 @@ move(direction, deltaTime) {
         this.x = Math.max(0, this.x - delta);
     } else if (direction === "right") {
         // Add the boundary constraint for the right edge
-        this.x = Math.min(664 - this.width, this.x + delta);
+        this.x = Math.min(644 - this.width, this.x + delta);
     }
     // Removed the DOM manipulation from here
 }
@@ -245,4 +243,4 @@ move(direction, deltaTime) {
 
 ---
 
-This addition ensures that the player's ship won't go outside the game area, which is a good introduction to game constraints. 
+This addition ensures that the player's ship won't go outside the game area, which is a good introduction to game constraints.

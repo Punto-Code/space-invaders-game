@@ -14,7 +14,7 @@ class Player {
     if (direction === "left") {
       this.x = Math.max(0, this.x - delta);
     } else if (direction === "right") {
-      this.x = Math.min(664 - this.width, this.x + delta);
+      this.x = Math.min(644 - this.width, this.x + delta);
     }
   }
 
