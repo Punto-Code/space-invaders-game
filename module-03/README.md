@@ -2,9 +2,11 @@
 
 **Summary:**
 - [Conceptual Overview](#concepts-15-20-minutes)
-- [1. Bullet Class: Introduction and Dynamics](#1-bullet-class-introduction-and-dynamics)
-- [2. Managing Bullets in the Game: A Technical Deep Dive](#2-managing-bullets-in-the-game-a-technical-deep-dive)
-- [3. Player Shooting Mechanics and Integration](#3-player-shooting-mechanics-and-integration)
+- [1. Updating the Game Loop](#1-updating-the-game-loop)
+- [2. Bullet Class: The Basics](#2-bullet-class-the-basics)
+- [3. Managing Bullets in the Game](#3-managing-bullets-in-the-game)
+- [4. Player Shooting Mechanics](#4-player-shooting-mechanics)
+- [5. Integrating Player Shooting with the Game Loop](#5-integrating-player-shooting-with-the-game-loop)
 
 ---
 
