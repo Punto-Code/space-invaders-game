@@ -62,14 +62,14 @@ this.bullets = [];
 #### 1.2. **Game Loop Enhancements**: Modify the game loop to accommodate shooting mechanics and bullet updates.
 ```js
 if (this.keyStates[" "]) {
-  // Player shooting logic will be added here soon
+  // Player shooting logic will go here
 } else {
-  // Cooldown refresh logic will be added here soon
+  // Cooldown refreshing logic will go here
 }
-this.updateBullets(deltaTime);  // Bullet movement logic will be added soon
+// Bullet movement logic will go here
 ```
 
-📝 **Manual Testing**: For now, the game should run smoothly with player movement. No visible changes, but ensure there are no console errors.
+📝 **Manual Testing**: For now, the game should run smoothly with player movement. No visible changes, but ensure there are no console errors and you can still move the player.
 
 ---
 
@@ -79,6 +79,7 @@ Time to define our bullets!
 
 #### 2.1. **Bullet Definition**: In a new file named `bullet.js`, define the `Bullet` class.
 ```js
+// scripts/bullet.js
 class Bullet {
   constructor({ x, y, width, height, color, speed }) {
     this.x = x;
@@ -87,46 +88,89 @@ class Bullet {
     this.height = height;
     this.color = color;
     this.speed = speed;
-    this.element = Bullet.createElement(this);
+    this.element = this.createElement();
   }
 }
 ```
 
+The bullet constructor allows for the coordinates, dimensions and color of bullets to be set by passing an object with the corresponding properties. We'll see some examples in a minute.
+
 #### 2.2. **Bullet Element Creation**: Add a method to generate the bullet's visual representation.
+
+The `createElement` method will be in charge of creating the bullet element that will be visible in the game area. We'll give it a className of "bullet", so that we can style it appropriately. We'll also assign its styles based on the bullet instance's properties: color, width, height, x, and y.
+
 ```js
-static createElement(bullet) {
+createElement() {
   const el = document.createElement("div");
   el.className = "bullet";
-  el.style.backgroundColor = bullet.color;
-  el.style.width = `${bullet.width}px`;
-  el.style.height = `${bullet.height}px`;
+  el.style.backgroundColor = this.color;
+  el.style.width = `${this.width}px`;
+  el.style.height = `${this.height}px`;
   el.style.borderRadius = "50%";
-  el.style.transform = `translate(${bullet.x}px, ${bullet.y}px)`;
+  el.style.transform = `translate(${this.x}px, ${this.y}px)`;
   return el;
 }
 ```
 
-#### 2.3. Keeping Bullets In-Bounds
+#### 2.3. Positioning Bullet elements
 
-As bullets travel, some might fly off the screen if they don't collide with other game elements first. We need a mechanism to detect this so the game isn't tracking a bunch of bullets that are no longer relevant.
+In order for the coordinates to be accurately positioned via the transform/translate style property, we need to make sure that all bullets are absolutely positioned within the game container at the same point. That way, the translations due to x and y values will place each bullet in the proper place consistently. All values for x and y are relative to the top left of the game area, so we'll absolutely position all game elements to the top left.
+
+```css
+#player {
+  width: 50px;
+  height: 50px;
+}
+
+#player, .bullet {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+```
+
+#### 2.4. Moving Bullets
+
+Bullets, much like our player, will move on the screen. We'll use a similar logic: update the bullet's position based on its speed and redraw it.
+
+```js
+move(deltaTime) {
+  this.y += this.speed.y * deltaTime/1000;
+  this.x += this.speed.x * deltaTime/1000;
+}
+
+draw() {
+  this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+}
+```
+
+The movement is the result of updating an object's coordinates and then visually redrawing it at its new position on the screen. Note that in this case our speed has both an `x` and a `y` property. This means that we can use the bullet constructor to create bullets that move horizontally as well as vertically by passing in a speed that looks something like this:
+
+```js
+const bulletSpeed = {
+  x: 1,
+  y: -10
+}
+```
+
+#### 2.5. Keeping Bullets In-Bounds
+
+As bullets travel, some might fly off the screen if they don't collide with other game elements first. We need a mechanism to detect this so the game isn't tracking a bunch of bullets that are no longer relevant. We'll incorporate the width and height of the bullet (`this.width` and `this.height`) in our calculations so that we don't consider a bullet out of range until it is entirely invisible from within the game area.
 
 ```js
 isOutOfBounds(containerHeight, containerWidth) {
-  // we incorporate the width and height of the bullet 
-  // in these calculations so that we don't count a
-  // bullet as out of bounds until it is entirely out 
-  // of the game area and no part of it is still visible.
+  // this.y is between -this.height and containerHeight + this.height
   const isInYRange = (-this.height < this.y) && (this.y < containerHeight + this.height);
+  // this.x is between -this.width and containerWidth + this.width
   const isInXRange = (-this.width < this.x) && (this.x < containerWidth + this.width);
-  // if the bullet is not in both X & Y range
-  // then it's out of bounds
+  // return true if the bullet is not within both x and y range
   return !(isInYRange && isInXRange);
 }
 ```
 
 This method checks if a bullet is outside the game area. If it is, we'll want to remove it. We'll want to use this method inside of our game loop.
 
-#### 2.4. **Load the bullet script in index.html**
+#### 2.6. **Load the bullet script in index.html**
 
 ```html
 <script src="scripts/game.js"></script>
@@ -141,10 +185,12 @@ This method checks if a bullet is outside the game area. If it is, we'll want to
 
 #### 3. Managing Bullets in the Game
 
-Integrate bullet management into the game. We've already added an empty array of `this.bullets` to the game, now we need to add logic for adding and removing bullets from the game.
+Next, we'll integrate bullet management into the game. We've already added an empty array of `this.bullets` to the game, now we need to add logic for adding and removing bullets from the game. We're using the `this.bullets` array to track bullets that are on screen at the time, so every time a new bullet is shot, it should be added to the array. Every time a bullet leaves the screen, it should be removed from the array.
 
 ##### 3.1 **Adding Bullets**: Introduce a method to add bullets to the game.
+We'll add this method below the `Game` constructor in `scripts/game.js`.
 ```js
+// scripts/game.js
 addBullet(bullet) {
   this.bullets.push(bullet);
   this.container.appendChild(bullet.element);
@@ -158,19 +204,21 @@ addBullet(bullet) {
 ```
 
 ##### 3.2. **Removing Bullets**: Introduce a method to remove bullets from the game.
+We'll add this next method directly below `addBullet`.
 ```js
 removeBullet(bullet) {
   const index = this.bullets.indexOf(bullet);
   if (index > -1) {
+    // remove 1 bullet from the array starting at the index of the bullet we found
     this.bullets.splice(index, 1);
     bullet.element.remove();
   }
 }
 ```
 
-- `this.bullets.indexOf(bullet)`: This finds the index of the bullet in our array. If it's not present, it returns `-1`.
+- `this.bullets.indexOf(bullet)`: This finds the index of the bullet in our array. If it's not present, it returns `-1`. The `bullet` will most likely be present when this method is called, but it's always good to guard against the possibility that it isn't!
 
-- `this.bullets.splice(index, 1)`: The `splice()` method removes elements from an array. We're removing the bullet instance from our array.
+- `this.bullets.splice(index, 1)`: The `splice()` method removes elements from an array. We're removing the bullet instance from our array by removing 1 element from the array starting at the index of the bullet that we found using `indexOf`.
 
 - `bullet.element.remove()`: This is another essential DOM method. It completely removes an element from the DOM. So, our bullet's visual representation is taken off the game screen.
 
@@ -180,14 +228,28 @@ removeBullet(bullet) {
 
 The game loop should ensure that all bullets move between every frame, check if they're now out of bounds, and remove them if necessary. We'll store this logic in a method called `updateBullets`.
 ```js
+// scripts/game.js
 updateBullets(deltaTime) {
   this.bullets.forEach((bullet) => {
     bullet.move(deltaTime);
     if (bullet.isOutOfBounds(this.container.clientHeight, this.container.clientWidth)) {
       this.removeBullet(bullet);
+    } else {
+      bullet.draw();
     }
   });
 }
+```
+
+In order for this method to do anything for us, we need to make sure we call it from the game loop!
+
+```js
+if (this.keyStates[" "]) {
+  // Player shooting logic will go here
+} else {
+  // cooldown refreshing logic will go here
+}
+this.updateBullets(deltaTime);
 ```
 
 📝 **Manual Testing**: Pressing the space key won't shoot bullets yet, but we can create one manually to make sure movement works as expected:
@@ -237,24 +299,30 @@ Finally, we want to empower the player to shoot bullets. Players should be able 
 In the `Player` class, update the constructor:
 
 ```js
-this.firingCooldown = 15;
+this.firingCooldown = 150;
 this.lastShotTime = -this.firingCooldown;
 ```
-We're starting with the lastShotTime as `-this.firingCooldown`, which is `-15` in this case, so that our cooldown is not active to start and the player can shoot right away.
+We're starting with the lastShotTime as `-this.firingCooldown`, which is `-150` in this case, so that our cooldown is not active to start and the player can shoot right away.
 
 #### 4.2. **Cooldown Logic**: Implement the cooldown mechanism for shooting.
 
 Every game action, especially one as impactful as shooting, typically has a cooldown to prevent spamming and balance the gameplay.
 
-In this method:
+We'll add the `shootIfReady` method to the `Player` class below `move` and `draw` in the `scripts/player.js`:
 
 ```js
 shootIfReady(deltaTime) {
+  // update the timeSinceLast shot by adding the deltaTime amount
   this.lastShotTime += deltaTime;
+  // if the time since our last shot has met or exceeded the cooldown
   if (this.lastShotTime >= this.firingCooldown) {
+    // then we'll reset the time since our last shot to 0 
     this.lastShotTime = 0;
+    // and fire a bullet
     return this.shoot();
   }
+  // we return null from this method if no shot is fired so we know
+  // when we call the method whether or not a bullet was fired
   return null;
 }
 ```
@@ -267,7 +335,7 @@ shootIfReady(deltaTime) {
 
 Note also that we're returning either the bullet returned from `this.shoot()` or `null` from this method. This is important, because this method can return a truthy or a falsey value depending on whether the player was in fact ready to shoot when it was called. We'll take advantage of this within the `Game` loop:
 
-- whenever a player is holding the spacebar during  a frame, we'll call `shootIfReady()` and store the result in a variable `bullet`
+- whenever a player is holding the spacebar during a frame, we'll call `shootIfReady()` and store the result in a variable `bullet`
 - We can use an if statement, to ensure that:
   - if the `bullet` variable is truthy (not null)
     - we can call the `addBullet` method to add it to the array of bullets that the game is tracking every frame. 
@@ -311,7 +379,7 @@ center() {
 
 Once the player is ready to shoot (based on our cooldown logic), this method is called. Remember that the `x=0, y=0` position is at the top left of the game area. Increasing `x` will move an element towards the right and increasing `y` will move an element towards the bottom.
 
-When we create the new bullet, we want to position it at the top center of the player's ship, so we need to calculate this position by setting `x` and `y` for the bullet based on the `x` and `y` position of the ship. 
+When we create the new bullet, we want to position it at the top center of the player's ship, so we need to calculate this position by setting `x` and `y` for the bullet based on the `x` and `y` position of the ship. (an image or diagram might be helpful here)
 
 We can use the `center()` method to ensure that the bullet's x coordinate aligns with the center of the ship. For the vertical position, the player's `y` coordinate aligns with the top of the ship.
 
@@ -325,7 +393,7 @@ shoot() {
     width: bulletWidth,
     height: bulletHeight,
     color: "red",
-    speed: { x: 0, y: -3.5 },
+    speed: { x: 0, y: -200 },
   });
 }
 ```
@@ -357,7 +425,7 @@ if (this.keyStates[" "]) {
 }
 ```
 
-📝 **Manual Testing**: Play the game! You should now be able to move the player and shoot bullets seamlessly.
+📝 **Manual Testing**: Play the game! You should now be able to move the player and shoot bullets seamlessly. Feel free to experiment with different values for the speed of bullets and the firing cooldown to see how it affects the game.
 
 ---
 

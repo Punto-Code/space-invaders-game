@@ -8,6 +8,37 @@ class Game {
       ArrowRight: false,
       " ": false,
     };
+    this.bullets = [];
+  }
+
+  addBullet(bullet) {
+    this.bullets.push(bullet);
+    this.container.appendChild(bullet.element);
+  }
+
+  removeBullet(bullet) {
+    const index = this.bullets.indexOf(bullet);
+    if (index > -1) {
+      // remove 1 bullet from the array starting at the index of the bullet we found
+      this.bullets.splice(index, 1);
+      bullet.element.remove();
+    }
+  }
+
+  updateBullets(deltaTime) {
+    this.bullets.forEach((bullet) => {
+      bullet.move(deltaTime);
+      if (
+        bullet.isOutOfBounds(
+          this.container.clientHeight,
+          this.container.clientWidth
+        )
+      ) {
+        this.removeBullet(bullet);
+      } else {
+        bullet.draw();
+      }
+    });
   }
 
   setupPlayerControls() {
@@ -38,6 +69,15 @@ class Game {
       if (this.keyStates.ArrowRight) {
         this.player.move("right", deltaTime);
       }
+      if (this.keyStates[" "]) {
+        const bullet = this.player.shootIfReady(deltaTime);
+        if (bullet) {
+          this.addBullet(bullet);
+        }
+      } else {
+        this.player.refreshCooldown(deltaTime);
+      }
+      this.updateBullets(deltaTime);
 
       this.player.draw();
 
