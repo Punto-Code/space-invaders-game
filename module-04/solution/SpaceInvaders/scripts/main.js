@@ -5,4 +5,3 @@ const game = new Game({
   player: player,
 });
 game.start();
-

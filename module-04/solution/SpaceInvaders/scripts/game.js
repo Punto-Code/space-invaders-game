@@ -9,6 +9,9 @@ class Game {
       " ": false,
     };
     this.bullets = [];
+    this.enemies = [];
+    this.timeSinceLastSpawn = 3000;
+    this.spawnInterval = 3000;
   }
 
   addBullet(bullet) {
@@ -39,6 +42,53 @@ class Game {
         bullet.draw();
       }
     });
+  }
+
+  addEnemy(enemy) {
+    this.enemies.push(enemy);
+    this.container.appendChild(enemy.element);
+  }
+
+  removeEnemy(enemy) {
+    const index = this.enemies.indexOf(enemy);
+    if (index > -1) {
+      // remove 1 enemy from the array starting at the index of the enemy we found
+      this.enemies.splice(index, 1);
+      addSpawnPoint(enemy.spawnPoint);
+      enemy.element.remove();
+    }
+  }
+
+  updateEnemies(deltaTime) {
+    this.spawnEnemies(deltaTime);
+    this.enemies.forEach((enemy) => {
+      enemy.move(deltaTime);
+      if (
+        enemy.isOutOfBounds(
+          this.container.clientHeight,
+          this.container.clientWidth
+        )
+      ) {
+        this.removeEnemy(enemy);
+      } else {
+        enemy.draw();
+      }
+    });
+  }
+
+  spawnEnemies(deltaTime) {
+    this.timeSinceLastSpawn += deltaTime;
+    if (this.timeSinceLastSpawn >= this.spawnInterval) {
+      const spawnPoint = getRandomSpawnPoint();
+      this.addEnemy(
+        new Enemy({
+          x: spawnPoint.x,
+          y: spawnPoint.y,
+          speed: { x: 0, y: 100 },
+        })
+      );
+      this.timeSinceLastSpawn = 0;
+    }
   }
 
   setupPlayerControls() {
@@ -80,6 +130,8 @@ class Game {
       this.updateBullets(deltaTime);
 
       this.player.draw();
+
+      this.updateEnemies(deltaTime);
 
       requestAnimationFrame(gameLoop);
     };
