@@ -8,16 +8,6 @@ body {
 #game {
   position: relative;
   overflow: hidden;
-  height: 644px;
-  width: 644px;
-  margin: 0 auto;
-  padding: 0;
-  opacity: 1;
-}
-
-#game {
-  position: relative;
-  overflow: hidden;
   width: 644px;
   height: 644px;
   margin: 0 auto;
@@ -45,4 +35,7 @@ body {
   left: 0;
   width: 50px;
   height: 50px;
+  background-image: url("https://res.cloudinary.com/dm5zvhgto/image/upload/v1695268028/punto-code/space-invaders/images/ship-transparent_eo3jce.png");
+  background-size: cover;
+  background-position: center;
 }

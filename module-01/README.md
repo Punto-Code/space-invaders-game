@@ -160,11 +160,7 @@ You're retrieving the values that were set using the `this` keyword inside the c
   </head>
   <body>
     <div id="game">
-      <img
-        id="player"
-        src="https://res.cloudinary.com/dm5zvhgto/image/upload/v1695268028/punto-code/space-invaders/images/ship-transparent_eo3jce.png"
-        alt="Player's Spaceship"
-      />
+      <div id="player"></div>
       <!-- Other game elements will be added here in the future -->
     </div>
 
@@ -204,6 +200,9 @@ body {
   left: 0;
   width: 50px;
   height: 50px;
+  background-image: url("https://res.cloudinary.com/dm5zvhgto/image/upload/v1695268028/punto-code/space-invaders/images/ship-transparent_eo3jce.png");
+  background-size: cover;
+  background-position: center;
 }
 ```
 

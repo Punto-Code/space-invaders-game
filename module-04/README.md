@@ -145,15 +145,32 @@ class Enemy {
   }
 
   createElement() {
-    const el = document.createElement("img");
+    const el = document.createElement("div");
     el.className = "enemy";
-    el.src = "https://res.cloudinary.com/dm5zvhgto/image/upload/v1695268032/punto-code/space-invaders/images/enemy-transparent_gqghbj.png";
     el.style.width = `${this.width}px`;
     el.style.height = `${this.height}px`;
-    el.style.position = "absolute";
-    document.getElementById("game").appendChild(el);
     return el;
   }
+}
+```
+
+We'll also need to add some css for the background image of the enemy element.
+
+```css
+.enemy {
+  background-image: url("https://res.cloudinary.com/dm5zvhgto/image/upload/v1695268027/punto-code/space-invaders/images/transparent-enemy_fru5cg.png");
+}
+```
+
+We can consolidate our background size and positioning logic to work for all game elements:
+
+```css
+#player, .bullet, .enemy {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  background-position: center;
 }
 ```
 
@@ -191,17 +208,7 @@ class Enemy {
 }
 ```
 
-For this part to work properly, we also need to add the `.enemy` class to our `styles/main.css` to make sure that the elements all have the same reference point of the top left of the game area.
-
-```css
-#player,
-.bullet,
-.enemy {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-```
+Remember that for this part to work properly, all game elements must be absolutely positioned relative to the top left of the game area. This is done so all elements are translated from the same point.
 
 ### 1.5 Removing enemies when they leave the game area.
 

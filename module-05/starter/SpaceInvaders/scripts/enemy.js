@@ -11,10 +11,8 @@ class Enemy {
   }
 
   createElement() {
-    const el = document.createElement("img");
+    const el = document.createElement("div");
     el.className = "enemy";
-    el.src =
-      "https://res.cloudinary.com/dm5zvhgto/image/upload/v1695268027/punto-code/space-invaders/images/transparent-enemy_fru5cg.png";
     el.style.width = `${this.width}px`;
     el.style.height = `${this.height}px`;
     return el;
@@ -38,10 +36,5 @@ class Enemy {
       -this.width < this.x && this.x < containerWidth + this.width;
     // return true if the enemy is not within both x and y range
     return !(isInYRange && isInXRange);
-  }
-
-  onDestroy() {
-    // Add additional destruction logic here
-    addSpawnPoint(this.spawnPoint);
   }
 }

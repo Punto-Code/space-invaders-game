@@ -24,6 +24,7 @@ class Game {
     if (index > -1) {
       // remove 1 bullet from the array starting at the index of the bullet we found
       this.bullets.splice(index, 1);
+      addSpawnPoint(enemy.spawnPoint);
       bullet.element.remove();
     }
   }
@@ -54,7 +55,6 @@ class Game {
     if (index > -1) {
       // remove 1 enemy from the array starting at the index of the enemy we found
       this.enemies.splice(index, 1);
-      addSpawnPoint(enemy.spawnPoint);
       enemy.element.remove();
     }
   }
