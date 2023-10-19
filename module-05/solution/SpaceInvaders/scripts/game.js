@@ -12,6 +12,44 @@ class Game {
     this.enemies = [];
     this.timeSinceLastSpawn = 3000;
     this.spawnInterval = 3000;
+    this.isPaused = false;
+  }
+
+  togglePause() {
+    this.isPaused = !this.isPaused;
+    if (this.isPaused) {
+      this.container.classList.add("paused");
+    } else {
+      this.container.classList.remove("paused");
+    }
+  }
+
+  reset() {
+    this.player.reset();
+    this.bullets.forEach((bullet) => {
+      bullet.element.remove();
+    });
+    this.bullets = [];
+    this.enemies.forEach((enemy) => {
+      enemy.element.remove();
+      addSpawnPoint(enemy.spawnPoint);
+    });
+    this.enemies = [];
+    if (this.isPaused) {
+      this.togglePause();
+    }
+  }
+
+  hasCollision(objectA, objectB) {
+    const rectA = objectA.element.getBoundingClientRect();
+    const rectB = objectB.element.getBoundingClientRect();
+
+    return (
+      rectA.left < rectB.right && // left of A is left of right of B
+      rectA.right > rectB.left && // right of A is right of left of B
+      rectA.top < rectB.bottom && // top of A is above bottom of B
+      rectA.bottom > rectB.top // bottom of A is below top of B
+    );
   }
 
   addBullet(bullet) {
@@ -39,6 +77,20 @@ class Game {
       ) {
         this.removeBullet(bullet);
       } else {
+        // check for collisions between this bullet and any enemy
+        this.enemies.forEach((enemy) => {
+          if (bullet.speed.y < 0 && this.hasCollision(bullet, enemy)) {
+            enemy.explode();
+            this.removeEnemy(enemy);
+            this.removeBullet(bullet);
+          }
+        });
+
+        // check for collisions between this bullet and the player
+        if (bullet.speed.y > 0 && this.hasCollision(bullet, this.player)) {
+          this.player.explode();
+          this.togglePause();
+        }
         bullet.draw();
       }
     });
@@ -55,7 +107,9 @@ class Game {
       // remove 1 enemy from the array starting at the index of the enemy we found
       this.enemies.splice(index, 1);
       addSpawnPoint(enemy.spawnPoint);
-      enemy.element.remove();
+      setTimeout(() => {
+        enemy.element.remove();
+      }, 2000);
     }
   }
 
@@ -71,7 +125,18 @@ class Game {
       ) {
         this.removeEnemy(enemy);
       } else {
-        enemy.draw();
+        // add conditional logic to check for collision here
+        if (this.hasCollision(enemy, this.player)) {
+          this.player.explode();
+          this.togglePause();
+          enemy.explode();
+        } else {
+          enemy.draw();
+          const newBullet = enemy.shootIfReady(deltaTime);
+          if (newBullet) {
+            this.addBullet(newBullet);
+          }
+        }
       }
     });
   }
@@ -84,7 +149,8 @@ class Game {
         new Enemy({
           x: spawnPoint.x,
           y: spawnPoint.y,
-          speed: { x: 0, y: 100 },
+          speed: { x: 0, y: 50 },
+          firingCooldown: 3000
         })
       );
       this.timeSinceLastSpawn = 0;
@@ -95,6 +161,12 @@ class Game {
     this.keydownHandler = (e) => {
       if (this.keyStates.hasOwnProperty(e.key)) {
         this.keyStates[e.key] = true;
+      }
+      if (e.key === "p" || e.key === "P") {
+        this.togglePause();
+      }
+      if (e.key === "r" || e.key === "R") {
+        this.isPaused && this.reset();
       }
     };
     this.keyupHandler = (e) => {
@@ -113,25 +185,28 @@ class Game {
       const deltaTime = timeStamp - lastTime;
       lastTime = timeStamp;
 
-      if (this.keyStates.ArrowLeft) {
-        this.player.move("left", deltaTime);
-      }
-      if (this.keyStates.ArrowRight) {
-        this.player.move("right", deltaTime);
-      }
-      if (this.keyStates[" "]) {
-        const bullet = this.player.shootIfReady(deltaTime);
-        if (bullet) {
-          this.addBullet(bullet);
+      // all updating logic should run when game is unpaused
+      if (!this.isPaused) {
+        if (this.keyStates.ArrowLeft) {
+          this.player.move("left", deltaTime);
         }
-      } else {
-        this.player.refreshCooldown(deltaTime);
+        if (this.keyStates.ArrowRight) {
+          this.player.move("right", deltaTime);
+        }
+        if (this.keyStates[" "]) {
+          const bullet = this.player.shootIfReady(deltaTime);
+          if (bullet) {
+            this.addBullet(bullet);
+          }
+        } else {
+          this.player.refreshCooldown(deltaTime);
+        }
+        this.updateBullets(deltaTime);
+
+        this.player.draw();
+
+        this.updateEnemies(deltaTime);
       }
-      this.updateBullets(deltaTime);
-
-      this.player.draw();
-
-      this.updateEnemies(deltaTime);
 
       requestAnimationFrame(gameLoop);
     };

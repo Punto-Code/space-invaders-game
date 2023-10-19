@@ -55,11 +55,21 @@ class Player {
     const bulletHeight = 10;
     return new Bullet({
       x: this.center().x - bulletWidth / 2,
-      y: this.y - bulletHeight/2,
+      y: this.y - bulletHeight / 2,
       width: bulletWidth,
       height: bulletHeight,
       color: "red",
-      speed: { x: 0, y: -200 }
-    })
+      speed: { x: 0, y: -200 },
+    });
+  }
+
+  explode() {
+    this.element.classList.add("exploded");
+  }
+
+  reset() {
+    this.x = 300;
+    this.element.classList.remove("exploded");
+    this.draw();
   }
 }
