@@ -85,7 +85,7 @@ class Game {
       const levelElement = document.getElementById("level-display");
       levelElement.textContent = `Level: ${level}`;
     }
-    if (score) {
+    if (score || score === 0) {
       const scoreElement = document.getElementById("score-display");
       scoreElement.textContent = `Score: ${score}`;
     }

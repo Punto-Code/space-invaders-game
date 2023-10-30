@@ -33,6 +33,7 @@ Certainly! Here's a more in-depth concept overview that introduces the key ideas
 ## Concept Overview
 
 ### 1. **Feedback Loops**
+
 In video games, feedback keeps players informed about their progress and achievements. When you earn points, collect coins, or reach a checkpoint, the game often responds with sounds, visuals, or even text messages.
 
 **Example**: Think of the "ding" sound when Mario collects a coin. It immediately tells the player they've done something right.
@@ -45,10 +46,11 @@ function playSoundEffect(soundFile) {
   audio.play();
 }
 
-playSoundEffect('coin-collected.mp3');
+playSoundEffect("coin-collected.mp3");
 ```
 
 ### 2. **Leveling Up**
+
 As you progress in games, the difficulty often increases. This is known as "leveling up." New challenges are introduced, making the game more interesting.
 
 **Example**: In many games, when you move to a higher level, enemies might move faster, or new obstacles might be introduced.
@@ -57,7 +59,7 @@ A simple code-based representation of this:
 
 ```javascript
 function increaseDifficulty(level) {
-  let enemySpeed = 1 + (level * 0.1);  // enemies move 10% faster with each level
+  let enemySpeed = 1 + level * 0.1; // enemies move 10% faster with each level
   return enemySpeed;
 }
 
@@ -66,6 +68,7 @@ let speed = increaseDifficulty(currentLevel);
 ```
 
 ### 3. **Database Storage**
+
 Databases store game data, like high scores, so players can pick up where they left off. Think of them as a digital diary that remembers all your game achievements.
 
 **Example Code**:
@@ -76,10 +79,11 @@ function saveScore(playerName, score) {
   database.insert({ name: playerName, highScore: score });
 }
 
-saveScore('Alex', 5000);
+saveScore("Alex", 5000);
 ```
 
 ### 4. **Game Over Mechanism**
+
 When players lose all their lives or fail to complete a task, the game indicates that it's over. But don't worry, you can always start over!
 
 **Example Code**:
@@ -99,6 +103,7 @@ checkGameOver();
 ```
 
 ### 5. **Prompts**
+
 Games often ask players questions or for decisions. These are called prompts. They might ask for your name, if you want to save your game, or if you'd like to play again.
 
 **Example Code**:
@@ -331,7 +336,7 @@ constructor({ x, y }) {
   this.x = x || 0;
   this.y = y || 0;
   this.draw();
-  this.firingCooldown = 300;
+  this.firingCooldown = 500;
   this.bulletSpeed = {x: 0, y: -200};
   this.lastShotTime = -this.firingCooldown;
 }
@@ -745,7 +750,7 @@ updateTopBar({ level, score, message }) {
     const levelElement = document.getElementById("level-display");
     levelElement.textContent = `Level: ${level}`;
   }
-  if (score) {
+  if (score || score === 0) {
     const scoreElement = document.getElementById("score-display");
     scoreElement.textContent = `Score: ${score}`;
   }
@@ -842,7 +847,7 @@ reset() {
   this.x = 300;
   this.element.classList.remove("exploded");
   this.draw();
-  this.firingCooldown = 300;
+  this.firingCooldown = 500;
   this.bulletSpeed = { x: 0, y: -200 };
   this.lastShotTime = -this.firingCooldown;
 }
