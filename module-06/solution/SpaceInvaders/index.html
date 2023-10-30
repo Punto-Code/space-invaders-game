@@ -7,11 +7,37 @@
     <link rel="stylesheet" href="styles/main.css" />
   </head>
   <body>
+    <div id="top-bar">
+      <span id="level-display">Level: 1</span>
+      <span id="message-display"></span>
+      <span id="score-display">Score: 0</span>
+    </div>
     <div id="game">
       <div id="player"></div>
       <!-- Other game elements will be added here in the future -->
     </div>
+    <details>
+      <summary>
+        Controls Legend
+      </summary>
+      <hr/>
 
+      Left Arrow &rightarrow; move left <br/>
+      Right Arrow &rightarrow; move right <br/>
+      spacebar &rightarrow; shoot <br/>
+      P &rightarrow; Pause Game <br/>
+      R &rightarrow; Reset Game (if paused)
+
+      <hr/>
+
+    </details>
+    <br/>
+
+
+
+    <div id="highScoresList"></div>
+
+    <script src="https://unpkg.com/dexie@latest/dist/dexie.min.js"></script>
     <script src="scripts/game.js"></script>
     <script src="scripts/bullet.js"></script>
     <script src="scripts/enemy.js"></script>

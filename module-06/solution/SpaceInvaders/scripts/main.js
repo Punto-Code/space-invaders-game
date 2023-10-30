@@ -5,3 +5,8 @@ const game = new Game({
   player: player,
 });
 game.start();
+const db = new Dexie("HighScoresDB");
+
+db.version(1).stores({
+  scores: "++id, name, score",
+});

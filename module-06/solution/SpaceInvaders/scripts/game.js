@@ -12,7 +12,114 @@ class Game {
     this.enemies = [];
     this.timeSinceLastSpawn = 3000;
     this.spawnInterval = 3000;
+    this.enemySpeed = {
+      x: 0,
+      y: 50,
+    };
+    this.enemyFiringCooldown = 3000;
     this.isPaused = false;
+    this.isGameOver = false;
+    this.score = 0;
+    this.level = 1;
+    this.scoreTargetForLevelUp = this.calculatePoints(1);
+  }
+
+  updateScore(points) {
+    this.score += points;
+    if (this.score >= this.scoreTargetForLevelUp) {
+      this.levelUp();
+      this.scoreTargetForLevelUp = this.calculatePoints(this.level);
+    }
+    this.updateTopBar({
+      score: this.score,
+    });
+  }
+
+  addHighScore(name, score) {
+    return db.scores.add({
+      name: name,
+      score: score,
+    });
+  }
+
+  async getHighScores() {
+    return await db.scores.orderBy("score").reverse().toArray();
+  }
+
+  async displayHighScores() {
+    const highScoresDiv = document.getElementById("highScoresList");
+    const scores = await this.getHighScores();
+    highScoresDiv.classList.add("gameOver");
+
+    highScoresDiv.innerHTML = ""; // Clear previous scores
+
+    scores.forEach((score) => {
+      const scoreDiv = document.createElement("div");
+      scoreDiv.textContent = `${score.name}: ${score.score}`;
+      highScoresDiv.appendChild(scoreDiv);
+    });
+  }
+
+  async handleGameOver() {
+    this.isGameOver = true;
+    this.togglePause();
+    const messageElement = document.getElementById("message-display");
+    messageElement.innerHTML = `Game Over! You scored ${this.score}<br/>`;
+    const playAgainButton = document.createElement("button");
+    playAgainButton.textContent = "Play Again";
+    playAgainButton.addEventListener("click", (e) => {
+      this.reset();
+    });
+    messageElement.append(playAgainButton);
+    window.setTimeout(async () => {
+      const name = window.prompt("Enter your name to store your high score!");
+      if (name) {
+        await this.addHighScore(name, this.score);
+        await this.displayHighScores();
+      }
+    }, 3000);
+  }
+
+  updateTopBar({ level, score, message }) {
+    if (level) {
+      const levelElement = document.getElementById("level-display");
+      levelElement.textContent = `Level: ${level}`;
+    }
+    if (score) {
+      const scoreElement = document.getElementById("score-display");
+      scoreElement.textContent = `Score: ${score}`;
+    }
+    const messageElement = document.getElementById("message-display");
+    if (message) {
+      messageElement.textContent = message;
+    } else if (message === "") {
+      messageElement.innerHTML = "";
+    }
+  }
+
+  levelUp() {
+    this.level += 1;
+    this.enemySpeed.y *= 1.02;
+    this.enemyFiringCooldown = Math.max(150, this.enemyFiringCooldown * 0.98);
+    this.spawnInterval = Math.max(750, this.spawnInterval * 0.95);
+    this.player.levelUp();
+    this.updateTopBar({
+      level: this.level,
+      message: `Congratulations! You reached level ${this.level}`,
+    });
+    setTimeout(() => {
+      if (!this.isGameOver) {
+        this.updateTopBar({
+          message: "",
+        });
+      }
+    }, 3000);
+  }
+
+  calculatePoints(level) {
+    let x = 0.1;
+    let y = 1.8;
+    return Math.round((level / x) ** y);
   }
 
   togglePause() {
@@ -38,6 +145,24 @@ class Game {
     if (this.isPaused) {
       this.togglePause();
     }
+    document.getElementById("highScoresList").classList.remove("gameOver");
+    this.timeSinceLastSpawn = 3000;
+    this.spawnInterval = 3000;
+    this.enemySpeed = {
+      x: 0,
+      y: 50,
+    };
+    this.enemyFiringCooldown = 3000;
+    this.isPaused = false;
+    this.isGameOver = false;
+    this.score = 0;
+    this.level = 1;
+    this.updateTopBar({
+      score: this.score,
+      level: this.level,
+      message: "",
+    });
+    this.scoreTargetForLevelUp = this.calculatePoints(1);
   }
 
   hasCollision(objectA, objectB) {
@@ -81,6 +206,7 @@ class Game {
         this.enemies.forEach((enemy) => {
           if (bullet.speed.y < 0 && this.hasCollision(bullet, enemy)) {
             enemy.explode();
+            this.updateScore(Math.floor(enemy.y));
             this.removeEnemy(enemy);
             this.removeBullet(bullet);
           }
@@ -89,7 +215,7 @@ class Game {
         // check for collisions between this bullet and the player
         if (bullet.speed.y > 0 && this.hasCollision(bullet, this.player)) {
           this.player.explode();
-          this.togglePause();
+          this.handleGameOver();
         }
         bullet.draw();
       }
@@ -128,8 +254,8 @@ class Game {
         // add conditional logic to check for collision here
         if (this.hasCollision(enemy, this.player)) {
           this.player.explode();
-          this.togglePause();
           enemy.explode();
+          this.handleGameOver();
         } else {
           enemy.draw();
           const newBullet = enemy.shootIfReady(deltaTime);
@@ -149,8 +275,8 @@ class Game {
         new Enemy({
           x: spawnPoint.x,
           y: spawnPoint.y,
-          speed: { x: 0, y: 50 },
-          firingCooldown: 3000
+          speed: this.enemySpeed,
+          firingCooldown: this.enemyFiringCooldown,
         })
       );
       this.timeSinceLastSpawn = 0;

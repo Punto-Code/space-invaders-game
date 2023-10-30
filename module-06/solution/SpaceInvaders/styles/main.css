@@ -56,3 +56,22 @@ body {
 #player.exploded {
   background-image: url("https://res.cloudinary.com/dm5zvhgto/image/upload/v1695268034/punto-code/space-invaders/images/explosion-transparent_arvhvk.png");
 }
+
+#top-bar {
+  display: flex;
+  justify-content: space-between;
+  width: 644px;
+  height: 24px;
+  margin: 0 auto;
+}
+
+#message-display {
+  width: 70%;
+}
+
+#highScoresList {
+  display: none;
+}
+#highScoresList.gameOver {
+  display: block;
+}

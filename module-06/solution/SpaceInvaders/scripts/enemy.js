@@ -9,7 +9,7 @@ class Enemy {
     this.element = this.createElement();
     this.draw();
     this.firingCooldown = firingCooldown;
-    this.timeSinceLastShot = firingCooldown/2;
+    this.timeSinceLastShot = firingCooldown / 2;
   }
 
   createElement() {
@@ -60,7 +60,7 @@ class Enemy {
       width: bulletWidth,
       height: bulletHeight,
       color: "red",
-      speed: { x: 0, y: this.speed.y + 100 },
+      speed: { x: 0, y: this.speed.y * 2 },
     });
   }
 

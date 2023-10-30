@@ -7,8 +7,15 @@ class Player {
     this.x = x || 0;
     this.y = y || 0;
     this.draw();
-    this.firingCooldown = 150;
+    this.firingCooldown = 500;
+    this.bulletSpeed = { x: 0, y: -200 };
     this.lastShotTime = -this.firingCooldown;
+  }
+
+  levelUp() {
+    this.speed = Math.round(this.speed * 1.015);
+    this.firingCooldown = Math.max(50, Math.round(this.firingCooldown * 0.95));
+    this.bulletSpeed.y = Math.max(-300, Math.round(this.bulletSpeed.y * 1.02));
   }
 
   move(direction, deltaTime) {
@@ -59,7 +66,7 @@ class Player {
       width: bulletWidth,
       height: bulletHeight,
       color: "red",
-      speed: { x: 0, y: -200 },
+      speed: this.bulletSpeed,
     });
   }
 
@@ -71,5 +78,8 @@ class Player {
     this.x = 300;
     this.element.classList.remove("exploded");
     this.draw();
+    this.firingCooldown = 500;
+    this.bulletSpeed = { x: 0, y: -200 };
+    this.lastShotTime = -this.firingCooldown;
   }
 }
