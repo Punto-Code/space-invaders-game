@@ -41,6 +41,7 @@ class Enemy {
   }
 
   explode() {
+    game.sounds.enemyExplosion.play();
     this.element.classList.add("exploded");
   }
 
@@ -54,6 +55,7 @@ class Enemy {
   shoot() {
     const bulletWidth = 6;
     const bulletHeight = 10;
+    game.sounds.enemyShot.play();
     return new Bullet({
       x: this.center().x - bulletWidth / 2,
       y: this.y + this.height - bulletHeight / 2,

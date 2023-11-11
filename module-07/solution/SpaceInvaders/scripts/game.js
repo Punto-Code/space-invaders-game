@@ -1,8 +1,9 @@
 class Game {
-  constructor({ container, player }) {
+  constructor({ container, player, sounds }) {
     this.container = container;
     this.player = player;
-    this.isPaused = false;
+    this.sounds = sounds;
+    this.isPaused = true;
     this.keyStates = {
       ArrowLeft: false,
       ArrowRight: false,
@@ -62,6 +63,7 @@ class Game {
 
   async handleGameOver() {
     this.isGameOver = true;
+    this.sounds.gameOver.play();
     this.togglePause();
     const messageElement = document.getElementById("message-display");
     messageElement.innerHTML = `Game Over! You scored ${this.score}<br/>`;
@@ -107,6 +109,7 @@ class Game {
       level: this.level,
       message: `Congratulations! You reached level ${this.level}`,
     });
+    this.sounds.levelUp.play();
     setTimeout(() => {
       if (!this.isGameOver) {
         this.updateTopBar({
@@ -126,8 +129,10 @@ class Game {
     this.isPaused = !this.isPaused;
     if (this.isPaused) {
       this.container.classList.add("paused");
+      this.sounds.backgroundMusic.pause();
     } else {
       this.container.classList.remove("paused");
+      this.sounds.backgroundMusic.resume();
     }
   }
 
@@ -206,6 +211,7 @@ class Game {
         this.enemies.forEach((enemy) => {
           if (bullet.speed.y < 0 && this.hasCollision(bullet, enemy)) {
             enemy.explode();
+            this.sounds.enemyExplosion.play();
             this.updateScore(Math.floor(enemy.y));
             this.removeEnemy(enemy);
             this.removeBullet(bullet);
@@ -215,6 +221,7 @@ class Game {
         // check for collisions between this bullet and the player
         if (bullet.speed.y > 0 && this.hasCollision(bullet, this.player)) {
           this.player.explode();
+          this.sounds.playerExplosion.play();
           this.handleGameOver();
         }
         bullet.draw();
@@ -306,8 +313,10 @@ class Game {
 
   start() {
     this.setupPlayerControls();
-    let lastTime = 0;
+    this.sounds.backgroundMusic.play();
+    let lastTime;
     const gameLoop = (timeStamp) => {
+      lastTime ||= timeStamp;
       const deltaTime = timeStamp - lastTime;
       lastTime = timeStamp;
 

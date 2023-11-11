@@ -60,6 +60,7 @@ class Player {
   shoot() {
     const bulletWidth = 6;
     const bulletHeight = 10;
+    game.sounds.playerShot.play()
     return new Bullet({
       x: this.center().x - bulletWidth / 2,
       y: this.y - bulletHeight / 2,
@@ -71,6 +72,7 @@ class Player {
   }
 
   explode() {
+    game.sounds.playerExplosion.play()
     this.element.classList.add("exploded");
   }
 

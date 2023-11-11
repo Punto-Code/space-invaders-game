@@ -177,7 +177,7 @@ You're retrieving the values that were set using the `this` keyword inside the c
 - Begin with some basic styling:
 
 ```css
-body {
+body, a {
   font-family: "Arial", sans-serif;
   background-color: #000;
   color: #fff;
